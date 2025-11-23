@@ -1,8 +1,8 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Search, UserCheck, MessageSquare, CheckCircle2 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Search, UserCheck, MessageSquare, CheckCircle2, ArrowRight } from "lucide-react"
 
 const steps = [
   {
@@ -27,65 +27,82 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="como-funciona" className="py-24 lg:py-32 bg-background">
-      <div className="container mx-auto px-6 lg:px-12">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
-            Cómo funciona
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Un proceso simple y rápido para encontrar a tu contador ideal
-          </p>
+    <section id="como-funciona" className="py-20 lg:py-24 bg-background relative overflow-hidden">
+      {/* Subtle Background Gradient */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none opacity-40">
+        <div className="absolute top-1/3 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="container mx-auto px-6 lg:px-12 relative z-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+          <div className="max-w-2xl">
+            <Badge variant="outline" className="mb-4 px-4 py-1 text-sm border-primary/30 bg-primary/5 text-primary backdrop-blur-sm">
+              Proceso Simplificado
+            </Badge>
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight">
+              Tu contador ideal <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600">
+                a tres pasos de distancia
+              </span>
+            </h2>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              Hemos optimizado cada etapa para que encuentres confianza y seguridad sin perder tiempo.
+            </p>
+          </div>
+
+          <div className="hidden md:flex items-center gap-2 text-sm font-medium text-muted-foreground bg-muted/30 px-4 py-2 rounded-full border border-border/50">
+            <CheckCircle2 className="size-4 text-primary" />
+            <span>Proceso 100% Verificado</span>
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-6 relative">
+          {/* Connecting Line (Desktop) */}
+          <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-px bg-gradient-to-r from-transparent via-border to-transparent z-0" />
+
           {steps.map((step, index) => {
             const Icon = step.icon
             return (
-              <div key={index} className="relative">
-                <Card className="h-full border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                  <CardContent className="p-8 flex flex-col items-center text-center">
-                    <div className="relative mb-6">
-                      <div className="absolute inset-0 bg-primary/10 rounded-full blur-xl" />
-                      <div className="relative bg-primary/5 rounded-full p-4">
-                        <Icon className="size-8 text-primary" />
+              <div key={index} className="relative z-10 group">
+                <Card className="h-full border-border/40 bg-background/60 backdrop-blur-sm hover:border-primary/30 transition-all duration-500 hover:shadow-lg hover:shadow-primary/5">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-6">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-primary/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="relative bg-background border border-border/50 rounded-xl p-3 shadow-sm group-hover:scale-105 transition-transform duration-300">
+                          <Icon className="size-6 text-primary" />
+                        </div>
                       </div>
+                      <span className="text-4xl font-bold text-muted-foreground/10 group-hover:text-primary/10 transition-colors duration-300">
+                        {step.number}
+                      </span>
                     </div>
-                    <div className="text-5xl font-bold text-muted-foreground/20 mb-2">
-                      {step.number}
-                    </div>
-                    <h3 className="text-xl font-semibold mb-3 text-foreground">
+
+                    <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors duration-300">
                       {step.title}
                     </h3>
-                    <p className="text-muted-foreground leading-relaxed">
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                       {step.description}
                     </p>
+
+                    <div className="flex items-center text-xs font-medium text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                      <span>Siguiente paso</span>
+                      <ArrowRight className="size-3 ml-1" />
+                    </div>
                   </CardContent>
                 </Card>
-                {index < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-1/2 -right-4 w-8 h-px bg-border z-0">
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-primary rounded-full" />
-                  </div>
-                )}
               </div>
             )
           })}
         </div>
 
-        <div className="mt-16 flex justify-center">
-          <Card className="max-w-2xl w-full border-primary/20 bg-primary/5">
-            <CardContent className="p-6 flex items-center gap-4">
-              <CheckCircle2 className="size-6 text-primary shrink-0" />
-              <div>
-                <p className="font-semibold text-foreground mb-1">
-                  Proceso 100% verificado
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Todos nuestros contadores pasan por un riguroso proceso de verificación para garantizar la calidad del servicio.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Mobile Verification Badge */}
+        <div className="mt-8 md:hidden flex justify-center">
+          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground bg-muted/30 px-4 py-2 rounded-full border border-border/50">
+            <CheckCircle2 className="size-4 text-primary" />
+            <span>Proceso 100% Verificado</span>
+          </div>
         </div>
       </div>
     </section>

@@ -4,7 +4,8 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, Sparkles } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
 export function Hero() {
   const [imageError, setImageError] = useState(false)
@@ -28,8 +29,9 @@ export function Hero() {
     }
     checkImage()
   }, [])
+
   return (
-    <section className="relative h-screen w-full overflow-hidden">
+    <section className="relative min-h-[100dvh] w-full overflow-hidden pt-32 lg:pt-36">
       {/* Animated Gradient Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 dark:from-slate-950 dark:via-blue-950/30 dark:to-indigo-950/20">
         {/* Animated particles/gradient effect */}
@@ -42,47 +44,81 @@ export function Hero() {
         </div>
       </div>
 
+      {/* Mobile Background Image (Visible only on small screens) */}
+      <div className="absolute inset-0 z-0 lg:hidden opacity-20 pointer-events-none">
+        {imageLoaded && !imageError && (
+          <Image
+            src="/ImagenHero.png"
+            alt="Background"
+            fill
+            className="object-cover object-center"
+            priority
+          />
+        )}
+        {/* Gradient overlay for better text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background/90" />
+      </div>
+
       {/* Content Container */}
       <div className="relative z-10 container mx-auto px-6 lg:px-12 h-full">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-end h-full pb-24 lg:pb-32">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center lg:items-end h-full pb-12 lg:pb-32 pt-8 lg:pt-0 min-h-[80vh] lg:min-h-full">
           {/* Left Column - Text Content */}
-          <div className="flex flex-col justify-end">
-            <div className="max-w-2xl">
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight text-foreground mb-6">
-                Encuentra a tu contador ideal en horas.
+          <div className="flex flex-col justify-center lg:justify-center h-full pt-10 lg:pt-0">
+            <div className="max-w-2xl mx-auto lg:mx-0 text-left">
+
+              {/* Badge */}
+              <div className="mb-4">
+                <Badge variant="secondary" className="px-4 py-2 rounded-full bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-none text-sm font-medium gap-2">
+                  <Sparkles className="w-4 h-4 fill-yellow-500 text-yellow-500" />
+                  Contadores verificados
+                </Badge>
+              </div>
+
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-foreground mb-6">
+                Encuentra a tu <br className="hidden lg:block" />
+                contador ideal en <br className="hidden lg:block" />
+                horas
               </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground mb-10">
-                Conecta con expertos verificados para tu negocio, sin complicaciones.
+
+              <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-8 md:mb-10 max-w-xl leading-relaxed">
+                Conecta con contadores verificados, especializados en tu negocio y listos para ayudarte hoy mismo.
               </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 items-start">
+
+              <div className="flex flex-col sm:flex-row gap-4 items-start justify-start mb-10 md:mb-12">
                 <Button
                   asChild
                   size="lg"
-                  className="rounded-full text-base px-8 py-6 h-auto"
+                  className="rounded-xl text-sm md:text-base px-6 py-4 md:px-8 md:py-6 h-auto w-full sm:w-auto shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 font-bold bg-yellow-400 hover:bg-yellow-500 text-black border-none"
                 >
                   <Link href="#formulario">
-                    Comenzar ahora
-                    <ArrowRight className="ml-2 size-5" />
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="ghost"
-                  size="lg"
-                  className="rounded-full text-base px-8 py-6 h-auto"
-                >
-                  <Link href="#como-funciona">
-                    Ver cómo funciona
+                    Encontrar mi contador
+                    <ArrowRight className="ml-2 size-4 md:size-5" />
                   </Link>
                 </Button>
               </div>
+
+              {/* Stats Section */}
+              <div className="border-t border-border/40 pt-6 md:pt-8 grid grid-cols-2 sm:grid-cols-3 gap-6 md:gap-8">
+                <div>
+                  <p className="text-2xl sm:text-3xl font-bold text-foreground">500+</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">Contadores activos</p>
+                </div>
+                <div>
+                  <p className="text-2xl sm:text-3xl font-bold text-foreground">24hrs</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">Tiempo promedio de respuesta</p>
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <p className="text-2xl sm:text-3xl font-bold text-foreground">98%</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">Satisfacción del cliente</p>
+                </div>
+              </div>
+
             </div>
           </div>
 
-          {/* Right Column - Image */}
-          <div className="flex items-end justify-center lg:justify-end h-full pt-16 lg:pt-0">
-            <div className="relative w-full max-w-lg lg:max-w-xl h-[500px] lg:h-[600px] xl:h-[700px]">
+          {/* Right Column - Image (Hidden on mobile, visible on desktop) */}
+          <div className="hidden lg:flex items-end justify-end h-full">
+            <div className="relative w-full max-w-xl h-[600px] xl:h-[700px]">
               {/* Subtle glow effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-primary/2 to-transparent rounded-3xl blur-2xl -z-10" />
               <div className="relative w-full h-full animate-float">
@@ -93,7 +129,7 @@ export function Hero() {
                     fill
                     className="object-contain object-bottom drop-shadow-2xl"
                     priority
-                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    sizes="50vw"
                     onError={() => {
                       setImageError(true)
                       setImageLoaded(false)
@@ -121,4 +157,3 @@ export function Hero() {
     </section>
   )
 }
-
