@@ -3,7 +3,11 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
-export function Navbar() {
+interface NavbarProps {
+  onOpenForm: () => void
+}
+
+export function Navbar({ onOpenForm }: NavbarProps) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40">
       <div className="container mx-auto px-6 lg:px-12">
@@ -31,14 +35,12 @@ export function Navbar() {
 
           {/* CTA Button */}
           <Button
-            asChild
+            onClick={onOpenForm}
             size="default"
             className="rounded-full text-sm md:text-base"
           >
-            <Link href="#formulario" className="whitespace-nowrap">
-              <span className="hidden sm:inline">Encuentra a tu contador</span>
-              <span className="sm:hidden">Comenzar</span>
-            </Link>
+            <span className="hidden sm:inline">Encuentra a tu contador</span>
+            <span className="sm:hidden">Comenzar</span>
           </Button>
         </div>
       </div>

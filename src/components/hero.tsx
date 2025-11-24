@@ -7,7 +7,11 @@ import Image from "next/image"
 import { ArrowRight, Sparkles } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
-export function Hero() {
+interface HeroProps {
+  onOpenForm?: () => void
+}
+
+export function Hero({ onOpenForm }: HeroProps) {
   const [imageError, setImageError] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
 
@@ -33,12 +37,12 @@ export function Hero() {
   return (
     <section className="relative min-h-[100dvh] w-full overflow-hidden pt-32 lg:pt-36">
       {/* Animated Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 dark:from-slate-950 dark:via-blue-950/30 dark:to-indigo-950/20">
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-amber-50/30 to-orange-50/20 dark:from-slate-950 dark:via-amber-950/30 dark:to-orange-950/20">
         {/* Animated particles/gradient effect */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl animate-pulse [animation-duration:8s]" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-400/10 rounded-full blur-3xl animate-pulse [animation-delay:2s] [animation-duration:10s]" />
-          <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl animate-pulse [animation-delay:4s] [animation-duration:12s]" />
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl animate-pulse [animation-duration:8s]" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-400/10 rounded-full blur-3xl animate-pulse [animation-delay:2s] [animation-duration:10s]" />
+          <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl animate-pulse [animation-delay:4s] [animation-duration:12s]" />
           {/* Additional subtle gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent" />
         </div>
@@ -86,14 +90,12 @@ export function Hero() {
 
               <div className="flex flex-col sm:flex-row gap-4 items-start justify-start mb-10 md:mb-12">
                 <Button
-                  asChild
+                  onClick={onOpenForm}
                   size="lg"
                   className="rounded-xl text-sm md:text-base px-6 py-4 md:px-8 md:py-6 h-auto w-full sm:w-auto shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 font-bold bg-yellow-400 hover:bg-yellow-500 text-black border-none"
                 >
-                  <Link href="#formulario">
-                    Encontrar mi contador
-                    <ArrowRight className="ml-2 size-4 md:size-5" />
-                  </Link>
+                  Encontrar mi contador
+                  <ArrowRight className="ml-2 size-4 md:size-5" />
                 </Button>
               </div>
 

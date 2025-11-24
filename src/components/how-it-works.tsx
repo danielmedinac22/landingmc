@@ -31,7 +31,7 @@ export function HowItWorks() {
       {/* Subtle Background Gradient */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none opacity-40">
         <div className="absolute top-1/3 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl" />
       </div>
 
       <div className="container mx-auto px-6 lg:px-12 relative z-10">
@@ -42,7 +42,7 @@ export function HowItWorks() {
             </Badge>
             <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight">
               Tu contador ideal <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-amber-600">
                 a tres pasos de distancia
               </span>
             </h2>

@@ -12,6 +12,10 @@ import {
   Search
 } from "lucide-react"
 
+interface ServicesProps {
+  onOpenForm?: () => void
+}
+
 const services = [
   {
     id: "contabilidad",
@@ -26,8 +30,8 @@ const services = [
       "Cumplimiento fiscal",
     ],
     badge: "Más Buscado",
-    gradient: "from-blue-500/20 to-cyan-500/20",
-    iconColor: "text-blue-500"
+    gradient: "from-amber-500/20 to-orange-500/20",
+    iconColor: "text-amber-500"
   },
   {
     id: "fiscal",
@@ -41,8 +45,8 @@ const services = [
       "Atención al SAT",
       "Devoluciones de saldo",
     ],
-    gradient: "from-emerald-500/20 to-teal-500/20",
-    iconColor: "text-emerald-500"
+    gradient: "from-yellow-500/20 to-amber-500/20",
+    iconColor: "text-yellow-500"
   },
   {
     id: "financiera",
@@ -56,8 +60,8 @@ const services = [
       "Rentabilidad",
       "Inversiones inteligentes",
     ],
-    gradient: "from-violet-500/20 to-purple-500/20",
-    iconColor: "text-violet-500"
+    gradient: "from-orange-500/20 to-red-500/20",
+    iconColor: "text-orange-500"
   },
   {
     id: "nómina",
@@ -71,19 +75,19 @@ const services = [
       "Cálculo de aguinaldos",
       "Contratos laborales",
     ],
-    gradient: "from-amber-500/20 to-orange-500/20",
-    iconColor: "text-amber-500"
+    gradient: "from-amber-400/20 to-yellow-600/20",
+    iconColor: "text-amber-400"
   },
 ]
 
-export function Services() {
+export function Services({ onOpenForm }: ServicesProps) {
   return (
     <section id="servicios" className="py-20 lg:py-24 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-grid-white/[0.02] -z-10" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-30" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl opacity-30" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl opacity-30" />
       </div>
 
       <div className="container mx-auto px-6 lg:px-12 relative z-10">
@@ -93,7 +97,7 @@ export function Services() {
           </Badge>
           <h2 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight">
             ¿Qué tipo de contador <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-amber-600">
               necesitas hoy?
             </span>
           </h2>
@@ -143,7 +147,10 @@ export function Services() {
                     ))}
                   </div>
 
-                  <div className="pt-3 border-t border-border/30 flex items-center justify-between text-xs font-medium text-muted-foreground group-hover:text-primary transition-colors duration-300 cursor-pointer">
+                  <div
+                    onClick={onOpenForm}
+                    className="pt-3 border-t border-border/30 flex items-center justify-between text-xs font-medium text-muted-foreground group-hover:text-primary transition-colors duration-300 cursor-pointer hover:bg-primary/5 rounded-md px-2 py-1 -mx-2 -mb-1"
+                  >
                     <span className="flex items-center gap-1.5">
                       <Search className="size-3.5" />
                       Buscar expertos
