@@ -42,7 +42,7 @@ const services = [
     features: [
       "Declaraciones anuales",
       "Planeación estratégica",
-      "Atención al SAT",
+      "Atención a la DIAN",
       "Devoluciones de saldo",
     ],
     gradient: "from-yellow-500/20 to-amber-500/20",
@@ -71,8 +71,8 @@ const services = [
     description: "Profesionales para gestionar los pagos de tu equipo a tiempo.",
     features: [
       "Cálculo de nómina",
-      "Altas/Bajas IMSS",
-      "Cálculo de aguinaldos",
+      "Afiliaciones seguridad social",
+      "Prima de servicios",
       "Contratos laborales",
     ],
     gradient: "from-amber-400/20 to-yellow-600/20",
@@ -103,7 +103,7 @@ export function Services({ onOpenForm }: ServicesProps) {
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Desde llevar la contabilidad diaria hasta estrategias fiscales complejas.
-            Nuestra plataforma te conecta con el experto ideal en minutos.
+            Conecta con contadores certificados en Medellín y toda Colombia.
           </p>
         </div>
 

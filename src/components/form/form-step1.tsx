@@ -14,20 +14,22 @@ interface FormStep1Props {
 }
 
 const mainServices = [
-  "Ponte al día con tus impuestos",
+  "Registro en Cámara de Comercio de Medellín",
+  "Trámites ante la DIAN",
   "Contabilidad para e-commerce",
   "Asesoría para urgencias",
   "Declaraciones atrasadas",
   "Acompañamiento mensual",
   "Conciliación de pasarelas",
   "Constitución de empresa",
-  "Facturación electrónica",
 ]
 
 const relatedServices: Record<string, string[]> = {
+  "Registro en Cámara de Comercio de Medellín": ["Registro Mercantil", "Actualización RUT", "Certificaciones", "Renovación Matrícula"],
+  "Trámites ante la DIAN": ["Registro RUT", "Actualización RUT", "Certificado de Existencia", "Consultas Tributarias"],
   "Contabilidad para e-commerce": ["Shopify", "WooCommerce", "Mercado Libre", "Amazon"],
-  "Conciliación de pasarelas": ["Stripe", "PayPal", "Clip", "Conekta"],
-  "Constitución de empresa": ["S.A. de C.V.", "S. de R.L.", "Persona Física"],
+  "Conciliación de pasarelas": ["Stripe", "PayPal", "Wompi", "PayU"],
+  "Constitución de empresa": ["S.A.S.", "Ltda.", "Persona Natural"],
   "Acompañamiento mensual": ["Contabilidad", "Impuestos", "Nómina", "Reportes"],
 }
 

@@ -178,27 +178,28 @@ export function FormStep2({
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{
-                opacity: form.formState.isValid ? 1 : 0,
-                scale: form.formState.isValid ? 1 : 0.9
+                opacity: 1,
+                scale: 1
               }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.3 }}
             >
-              {form.formState.isValid && (
-                <Button
-                  variant="hero"
-                  type="submit"
-                  disabled={form.formState.isSubmitting}
-                >
-                  Continuar
-                <motion.span
-                  animate={{ x: [0, 3, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                >
+              <Button
+                variant="hero"
+                type="submit"
+                disabled={!form.formState.isValid || form.formState.isSubmitting}
+                className={!form.formState.isValid ? "opacity-60 cursor-not-allowed" : ""}
+              >
+                Continuar
+                {form.formState.isValid && (
+                  <motion.span
+                    animate={{ x: [0, 3, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  >
                     →
                   </motion.span>
-                </Button>
-              )}
+                )}
+              </Button>
             </motion.div>
           </div>
         </form>
