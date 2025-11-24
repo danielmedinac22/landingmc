@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 
 interface NavbarProps {
@@ -13,8 +14,14 @@ export function Navbar({ onOpenForm }: NavbarProps) {
       <div className="container mx-auto px-6 lg:px-12">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="text-xl font-bold text-foreground hover:opacity-80 transition-opacity">
-            Muy Contador
+          <Link href="/" className="hover:opacity-80 transition-opacity">
+            <Image
+              src="/logomc.png"
+              alt="Muy Contador"
+              width={90}
+              height={30}
+              className="h-6 w-auto"
+            />
           </Link>
 
           {/* Navigation Links */}
