@@ -16,6 +16,7 @@ interface FormData {
   name: string
   email: string
   phone: string
+  customMessage?: string
 }
 
 interface MultiStepFormProps {
@@ -26,11 +27,13 @@ interface MultiStepFormProps {
 export function MultiStepForm({ isOpen, onClose }: MultiStepFormProps) {
   const [currentStep, setCurrentStep] = React.useState(1)
   const [showAccelerateForm, setShowAccelerateForm] = React.useState(false)
+  const [isGeneratingMessage, setIsGeneratingMessage] = React.useState(false)
   const [formData, setFormData] = React.useState<FormData>({
     needs: [],
     name: "",
     email: "",
     phone: "",
+    customMessage: "",
   })
 
   const handleStep1Complete = (needs: string[]) => {
@@ -38,9 +41,41 @@ export function MultiStepForm({ isOpen, onClose }: MultiStepFormProps) {
     setCurrentStep(2)
   }
 
+  const generateCustomMessage = async (needs: string[]) => {
+    try {
+      setIsGeneratingMessage(true)
+      const response = await fetch('/api/generate-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ needs }),
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        setFormData((prev) => ({ ...prev, customMessage: result.message }))
+      } else {
+        // Fallback message if API fails
+        const fallbackMessage = `Cliente interesado en servicios contables: ${needs.join(', ')}.`
+        setFormData((prev) => ({ ...prev, customMessage: fallbackMessage }))
+      }
+    } catch (error) {
+      console.error('Error generating custom message:', error)
+      // Fallback message
+      const fallbackMessage = `Cliente interesado en servicios contables: ${needs.join(', ')}.`
+      setFormData((prev) => ({ ...prev, customMessage: fallbackMessage }))
+    } finally {
+      setIsGeneratingMessage(false)
+      setCurrentStep(3)
+    }
+  }
+
   const handleStep2Complete = (data: { name: string; email: string; phone: string }) => {
     setFormData((prev) => ({ ...prev, ...data }))
     setCurrentStep(3)
+    // La generación del mensaje se iniciará automáticamente en el paso 3
   }
 
   const handleFinalSubmit = () => {
@@ -55,6 +90,10 @@ export function MultiStepForm({ isOpen, onClose }: MultiStepFormProps) {
 
   const handleDataChange = React.useCallback((data: { name: string; email: string; phone: string }) => {
     setFormData((prev) => ({ ...prev, ...data }))
+  }, [])
+
+  const handleCustomMessageChange = React.useCallback((message: string) => {
+    setFormData((prev) => ({ ...prev, customMessage: message }))
   }, [])
 
   const handleBack = () => {
@@ -76,11 +115,13 @@ export function MultiStepForm({ isOpen, onClose }: MultiStepFormProps) {
     // Resetear el formulario
     setCurrentStep(1)
     setShowAccelerateForm(false)
+    setIsGeneratingMessage(false)
     setFormData({
       needs: [],
       name: "",
       email: "",
       phone: "",
+      customMessage: "",
     })
 
     // Cerrar el modal y regresar a la página principal
@@ -290,6 +331,99 @@ export function MultiStepForm({ isOpen, onClose }: MultiStepFormProps) {
                 />
               )}
 
+              {isGeneratingMessage && (
+                <motion.div
+                  key="generating"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="w-full max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
+                >
+                  <div className="space-y-8">
+                    {/* Animación de IA */}
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 200,
+                        damping: 15,
+                      }}
+                      className="flex justify-center"
+                    >
+                      <motion.div
+                        animate={{
+                          rotate: 360,
+                          scale: [1, 1.1, 1]
+                        }}
+                        transition={{
+                          rotate: { duration: 2, repeat: Infinity, ease: "linear" },
+                          scale: { duration: 1.5, repeat: Infinity, ease: "easeInOut" }
+                        }}
+                        className="w-24 h-24 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center"
+                      >
+                        <motion.div
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
+                          className="text-white text-2xl"
+                        >
+                          🤖
+                        </motion.div>
+                      </motion.div>
+                    </motion.div>
+
+                    {/* Texto animado */}
+                    <div className="space-y-4">
+                      <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-3xl lg:text-4xl font-bold"
+                      >
+                        Generando mensaje personalizado
+                      </motion.h2>
+
+                      <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                        className="text-lg text-muted-foreground"
+                      >
+                        Estamos utilizando inteligencia artificial para crear un mensaje perfecto
+                        para tu contador basado en tus necesidades específicas.
+                      </motion.p>
+
+                      {/* Indicador de progreso */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.6 }}
+                        className="flex justify-center"
+                      >
+                        <div className="flex space-x-2">
+                          {[0, 1, 2].map((i) => (
+                            <motion.div
+                              key={i}
+                              animate={{
+                                scale: [1, 1.5, 1],
+                                opacity: [0.5, 1, 0.5]
+                              }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                delay: i * 0.2,
+                                ease: "easeInOut"
+                              }}
+                              className="w-3 h-3 rounded-full bg-primary"
+                            />
+                          ))}
+                        </div>
+                      </motion.div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
               {currentStep === 3 && (
                 <FormStep3
                   key="step3"
@@ -297,6 +431,8 @@ export function MultiStepForm({ isOpen, onClose }: MultiStepFormProps) {
                   onSubmit={handleFinalSubmit}
                   onAccelerate={handleAccelerate}
                   onBackToHome={handleBackToHome}
+                  onCustomMessageChange={handleCustomMessageChange}
+                  onGenerateMessage={generateCustomMessage}
                 />
               )}
             </>
