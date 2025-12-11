@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import { supabaseConfig } from '@/config/supabase-config'
+import { supabaseConfig } from '../src/config/supabase-config'
 
 // Usar configuración temporal - en producción usar variables de entorno
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || supabaseConfig.url
