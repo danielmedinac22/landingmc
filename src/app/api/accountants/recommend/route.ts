@@ -1,6 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
+// Tipos para las consultas de Supabase
+interface Accountant {
+  id: string
+  name: string
+  email: string
+  phone: string
+  specialty: string
+  experience_years: number
+  rating: number
+  bio: string
+}
+
+interface Recommendation {
+  id: string
+  match_score: number
+  status: string
+  accountant_id: string
+  accountants: Accountant[]
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -13,14 +33,15 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Obtener recomendaciones para este cliente
+    // Obtener recomendaciones para este cliente con join a accountants
     const { data: recommendations, error } = await supabase
       .from('recommendations')
       .select(`
         id,
         match_score,
         status,
-        accountants (
+        accountant_id,
+        accountants!inner (
           id,
           name,
           email,
@@ -71,16 +92,19 @@ export async function GET(request: NextRequest) {
     }
 
     // Formatear respuesta
-    const formattedRecommendations = recommendations.map(rec => ({
-      id: rec.accountants.id,
-      name: rec.accountants.name,
-      specialty: rec.accountants.specialty,
-      experience_years: rec.accountants.experience_years,
-      rating: rec.accountants.rating,
-      bio: rec.accountants.bio,
-      match_score: rec.match_score,
-      is_fallback: false
-    }))
+    const formattedRecommendations = (recommendations as Recommendation[]).map(rec => {
+      const accountant = rec.accountants[0] // Join retorna array, pero en uno-a-uno solo hay un elemento
+      return {
+        id: accountant.id,
+        name: accountant.name,
+        specialty: accountant.specialty,
+        experience_years: accountant.experience_years,
+        rating: accountant.rating,
+        bio: accountant.bio,
+        match_score: rec.match_score,
+        is_fallback: false
+      }
+    })
 
     return NextResponse.json({
       recommendations: formattedRecommendations
