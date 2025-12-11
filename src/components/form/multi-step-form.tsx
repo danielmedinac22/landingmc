@@ -16,6 +16,8 @@ interface FormData {
   name: string
   email: string
   phone: string
+  timestamp?: number
+  website?: string
 }
 
 interface MultiStepFormProps {
@@ -31,6 +33,8 @@ export function MultiStepForm({ isOpen, onClose }: MultiStepFormProps) {
     name: "",
     email: "",
     phone: "",
+    timestamp: Date.now(),
+    website: "",
   })
 
   const handleStep1Complete = (needs: string[]) => {
@@ -43,10 +47,37 @@ export function MultiStepForm({ isOpen, onClose }: MultiStepFormProps) {
     setCurrentStep(3)
   }
 
-  const handleFinalSubmit = () => {
-    // Aquí puedes enviar los datos a tu API
-    console.log("Form data submitted:", formData)
-    // Ejemplo: await fetch('/api/submit-form', { method: 'POST', body: JSON.stringify(formData) })
+  const handleFinalSubmit = async () => {
+    try {
+      const submissionData = {
+        ...formData,
+        timestamp: formData.timestamp || Date.now(),
+      }
+
+      const response = await fetch('/api/clients', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submissionData),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Error al enviar el formulario')
+      }
+
+      const result = await response.json()
+      console.log("Form submitted successfully:", result)
+
+      // Aquí puedes hacer algo con el clientId si lo necesitas
+      // Por ejemplo, guardarlo en el estado para mostrar recomendaciones específicas
+
+    } catch (error) {
+      console.error("Error submitting form:", error)
+      // Aquí puedes mostrar un mensaje de error al usuario
+      alert(`Error al enviar el formulario: ${error.message}`)
+    }
   }
 
   const handleNeedsChange = React.useCallback((needs: string[]) => {
@@ -81,6 +112,8 @@ export function MultiStepForm({ isOpen, onClose }: MultiStepFormProps) {
       name: "",
       email: "",
       phone: "",
+      timestamp: Date.now(),
+      website: "",
     })
 
     // Cerrar el modal y regresar a la página principal

@@ -46,6 +46,8 @@ export function FormStep2({
   onNext,
   onBack,
 }: FormStep2Props) {
+  const [formStartTime] = React.useState(Date.now())
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: "onChange",
@@ -68,6 +70,12 @@ export function FormStep2({
   }, [watchedValues.name, watchedValues.email, watchedValues.phone])
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    // Agregar campos de seguridad antes de enviar
+    const secureData = {
+      ...values,
+      timestamp: formStartTime,
+      website: '', // honeypot field
+    }
     onNext()
   }
 

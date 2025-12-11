@@ -23,48 +23,119 @@ export function FormStep3({ formData, onSubmit, onAccelerate, onBackToHome }: Fo
   const [isSubmitted, setIsSubmitted] = React.useState(false)
   const [showRecommendations, setShowRecommendations] = React.useState(false)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const [recommendations, setRecommendations] = React.useState<any[]>([])
+  const [clientId, setClientId] = React.useState<string | null>(null)
 
   const handleSubmit = async () => {
     setIsSubmitting(true)
 
     try {
-      // Simular envío a API
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Enviar formulario a la API
+      const response = await fetch('/api/clients', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Error al enviar el formulario')
+      }
+
+      const result = await response.json()
+      setClientId(result.clientId)
+
+      // Obtener recomendaciones
+      await fetchRecommendations(result.clientId)
+
       onSubmit()
-
       setIsSubmitted(true)
-
-      // Mostrar recomendaciones inmediatamente después del envío exitoso
       setShowRecommendations(true)
+
     } catch (error) {
       console.error('Error submitting form:', error)
-      // Aquí podrías mostrar un mensaje de error
+      // Aquí podrías mostrar un mensaje de error al usuario
+      alert(`Error al enviar el formulario: ${error.message}`)
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  const recommendedAccountants = [
+  const fetchRecommendations = async (clientId: string) => {
+    try {
+      const response = await fetch(`/api/accountants/recommend?clientId=${clientId}`)
+
+      if (!response.ok) {
+        throw new Error('Error al obtener recomendaciones')
+      }
+
+      const data = await response.json()
+      setRecommendations(data.recommendations || [])
+    } catch (error) {
+      console.error('Error fetching recommendations:', error)
+      // Usar recomendaciones por defecto si falla la API
+      setRecommendations([
+        {
+          id: 1,
+          name: "María González",
+          specialty: "E-commerce & Pasarelas",
+          experience_years: 8,
+          rating: 4.9,
+          match_score: null,
+          is_fallback: true
+        },
+        {
+          id: 2,
+          name: "Carlos Ramírez",
+          specialty: "Constitución & Asesoría",
+          experience_years: 12,
+          rating: 4.8,
+          match_score: null,
+          is_fallback: true
+        },
+        {
+          id: 3,
+          name: "Ana Martínez",
+          specialty: "Contabilidad Mensual",
+          experience_years: 10,
+          rating: 4.9,
+          match_score: null,
+          is_fallback: true
+        },
+      ])
+    }
+  }
+
+  // Usar recomendaciones de la API o fallback
+  const displayRecommendations = recommendations.length > 0 ? recommendations : [
     {
       id: 1,
       name: "María González",
       specialty: "E-commerce & Pasarelas",
-      experience: "8 años",
+      experience_years: 8,
       rating: 4.9,
+      match_score: null,
+      is_fallback: true
     },
     {
       id: 2,
       name: "Carlos Ramírez",
       specialty: "Constitución & Asesoría",
-      experience: "12 años",
+      experience_years: 12,
       rating: 4.8,
+      match_score: null,
+      is_fallback: true
     },
     {
       id: 3,
       name: "Ana Martínez",
       specialty: "Contabilidad Mensual",
-      experience: "10 años",
+      experience_years: 10,
       rating: 4.9,
+      match_score: null,
+      is_fallback: true
     },
   ]
 
@@ -233,7 +304,7 @@ export function FormStep3({ formData, onSubmit, onAccelerate, onBackToHome }: Fo
                     Contadores recomendados para ti
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {recommendedAccountants.map((accountant, index) => (
+                    {displayRecommendations.map((accountant, index) => (
                       <motion.div
                         key={accountant.id}
                         initial={{ opacity: 0, y: 20, scale: 0.9 }}
@@ -247,20 +318,32 @@ export function FormStep3({ formData, onSubmit, onAccelerate, onBackToHome }: Fo
                       >
                         <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
                           <div className="space-y-3">
-                            <h4 className="text-xl font-semibold">
-                              {accountant.name}
-                            </h4>
+                            <div className="flex items-start justify-between">
+                              <h4 className="text-xl font-semibold">
+                                {accountant.name}
+                              </h4>
+                              {accountant.match_score && (
+                                <div className="text-xs bg-accent/20 text-accent px-2 py-1 rounded-full">
+                                  {Math.round(accountant.match_score)}% match
+                                </div>
+                              )}
+                            </div>
                             <p className="text-sm text-muted-foreground">
                               {accountant.specialty}
                             </p>
                             <div className="flex justify-between items-center text-sm">
                               <span className="text-muted-foreground">
-                                {accountant.experience}
+                                {accountant.experience_years} años exp.
                               </span>
                               <span className="font-medium">
                                 ⭐ {accountant.rating}
                               </span>
                             </div>
+                            {accountant.is_fallback && (
+                              <div className="text-xs text-muted-foreground mt-2">
+                                Recomendación general
+                              </div>
+                            )}
                           </div>
                         </Card>
                       </motion.div>
