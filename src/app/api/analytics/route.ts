@@ -62,26 +62,35 @@ export async function GET(request: NextRequest) {
     }
 
     // Tasa de conversión (contacted + qualified + converted)
-    const statusCounts = statusStats?.reduce((acc, client) => {
+    const statusCounts = statusStats?.reduce((acc: Record<string, number>, client: { status: string }) => {
       acc[client.status] = (acc[client.status] || 0) + 1
       return acc
     }, {} as Record<string, number>) || {}
 
-    const totalWithStatus = Object.values(statusCounts).reduce((sum, count) => sum + count, 0)
+    const totalWithStatus = Object.values(statusCounts).reduce((sum: number, count: unknown) => sum + (count as number), 0)
     const convertedCount = (statusCounts.contacted || 0) + (statusCounts.qualified || 0) + (statusCounts.converted || 0)
     const conversionRate = totalWithStatus > 0 ? (convertedCount / totalWithStatus) * 100 : 0
 
     // Servicios populares
-    const serviceCounts = popularServices?.reduce((acc, item) => {
-      const serviceName = item.services?.name
-      if (serviceName) {
+    const serviceCounts = popularServices?.reduce((acc: Record<string, number>, item: { services: unknown }) => {
+      // Manejar tanto array como objeto en item.services
+      if (Array.isArray(item.services)) {
+        // Si services es un array, iterar sobre cada servicio
+        item.services.forEach((service: { name?: string }) => {
+          if (service?.name) {
+            acc[service.name] = (acc[service.name] || 0) + 1
+          }
+        })
+      } else if ((item.services as { name?: string })?.name) {
+        // Si services es un objeto con propiedad name
+        const serviceName = (item.services as { name?: string }).name!
         acc[serviceName] = (acc[serviceName] || 0) + 1
       }
       return acc
     }, {} as Record<string, number>) || {}
 
     const topServices = Object.entries(serviceCounts)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([,a], [,b]) => (b as number) - (a as number))
       .slice(0, 10)
       .map(([name, count]) => ({ name, count }))
 
@@ -89,7 +98,7 @@ export async function GET(request: NextRequest) {
     const analytics = {
       period,
       total_clients: totalClients?.length || 0,
-      conversion_rate: Math.round(conversionRate * 100) / 100,
+      conversion_rate: Math.round((conversionRate as number) * 100) / 100,
       status_breakdown: statusCounts,
       top_services: topServices,
       generated_at: new Date().toISOString()
