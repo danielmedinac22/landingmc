@@ -6,9 +6,8 @@ export interface SupabaseConfig {
 }
 
 export const supabaseConfig: SupabaseConfig = {
-  url: 'https://dkrmwktlresbqdveszzo.supabase.co',
-  // NOTA: Esta parece ser una service role key. Necesitas obtener la anon key de Supabase
-  // Ve a Settings > API en tu proyecto de Supabase para obtener la anon key
-  anonKey: 'sb_secret_t52OcJ5fWr3LdvXxMtXALg_PtBw1xDA', // Temporal - reemplaza con anon key
-  serviceRoleKey: 'sb_secret_t52OcJ5fWr3LdvXxMtXALg_PtBw1xDA'
+  url: process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://dkrmwktlresbqdveszzo.supabase.co',
+  // IMPORTANTE: Esta debe ser la ANON KEY (pública), no la service role key
+  anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+  serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 }

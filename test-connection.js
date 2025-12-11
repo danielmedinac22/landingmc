@@ -1,60 +1,67 @@
-// Test rápido de conexión con Supabase
-const { createClient } = require('@supabase/supabase-js')
+require('dotenv').config({ path: '.env.local' });
 
-// Leer variables de entorno
-require('dotenv').config({ path: '.env.local' })
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error('❌ Variables de entorno no configuradas')
-  process.exit(1)
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey)
+const { createClient } = require('@supabase/supabase-js');
 
 async function testConnection() {
-  console.log('🔍 Probando conexión con Supabase...')
-  console.log('URL:', supabaseUrl)
-  console.log('Key starts with:', supabaseKey.substring(0, 10) + '...')
+  console.log('🔍 Probando conexión a Supabase...\n');
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  console.log('📋 Configuración:');
+  console.log(`URL: ${url ? '✅' : '❌'} ${url || 'No configurada'}`);
+  console.log(`Anon Key: ${anonKey ? '✅' : '❌'} ${anonKey ? anonKey.substring(0, 20) + '...' : 'No configurada'}`);
+
+  if (!url || !anonKey) {
+    console.log('\n❌ Variables de entorno no configuradas');
+    return;
+  }
+
+  const supabase = createClient(url, anonKey);
 
   try {
-    // Test básico de conexión
-    const { data, error } = await supabase.from('services').select('count').limit(1)
-
-    if (error) {
-      console.error('❌ Error de conexión:', error.message)
-      return false
-    }
-
-    console.log('✅ ¡Conexión exitosa!')
-
-    // Contar registros
-    const { count, error: countError } = await supabase
+    console.log('\n🧪 Probando consulta de lectura...');
+    const { data: services, error: servicesError } = await supabase
       .from('services')
-      .select('*', { count: 'exact', head: true })
+      .select('id, name')
+      .limit(1);
 
-    if (countError) {
-      console.error('❌ Error al contar servicios:', countError.message)
-    } else {
-      console.log(`📊 Servicios encontrados: ${count}`)
+    if (servicesError) {
+      console.log('❌ Error en consulta de lectura:', servicesError.message);
+      return;
     }
 
-    return true
+    console.log('✅ Lectura funciona - Servicios encontrados:', services?.length || 0);
+
+    console.log('\n🧪 Probando consulta de escritura (simulada)...');
+    // Probar inserción en una tabla que permita escritura con anon key
+    const { data: testInsert, error: insertError } = await supabase
+      .from('clients')
+      .insert({
+        name: 'Test User',
+        email: 'test@example.com',
+        phone: '+1234567890',
+        status: 'test',
+        source: 'test'
+      })
+      .select('id')
+      .single();
+
+    if (insertError) {
+      console.log('❌ Error en consulta de escritura:', insertError.message);
+      console.log('💡 Esto indica que las políticas RLS no permiten escritura con anon key');
+      console.log('   Necesitas ajustar las políticas RLS en Supabase o usar service role key');
+    } else {
+      console.log('✅ Escritura funciona - Cliente de prueba creado con ID:', testInsert?.id);
+
+      // Limpiar el registro de prueba
+      await supabase.from('clients').delete().eq('email', 'test@example.com');
+      console.log('🧹 Registro de prueba eliminado');
+    }
 
   } catch (error) {
-    console.error('❌ Error:', error.message)
-    return false
+    console.log('❌ Error inesperado:', error.message);
   }
 }
 
-testConnection().then(success => {
-  if (success) {
-    console.log('\n🎉 ¡Todo está configurado correctamente!')
-    console.log('Ahora puedes ejecutar: npm run dev')
-  } else {
-    console.log('\n❌ Hay problemas con la configuración. Revisa el setup de Supabase.')
-  }
-  process.exit(success ? 0 : 1)
-})
+testConnection();

@@ -9,7 +9,9 @@ const MAX_REQUESTS = 5 // máximo 5 envíos de formulario por IP en 15 minutos
 export function middleware(request: NextRequest) {
   // Solo aplicar rate limiting a la API de envío de formularios
   if (request.nextUrl.pathname === '/api/clients' && request.method === 'POST') {
-    const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown'
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+               request.headers.get('x-real-ip') ||
+               'unknown'
     const now = Date.now()
     const windowStart = now - WINDOW_MS
 
