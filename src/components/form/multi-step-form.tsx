@@ -76,7 +76,8 @@ export function MultiStepForm({ isOpen, onClose }: MultiStepFormProps) {
     } catch (error) {
       console.error("Error submitting form:", error)
       // Aquí puedes mostrar un mensaje de error al usuario
-      alert(`Error al enviar el formulario: ${error.message}`)
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+      alert(`Error al enviar el formulario: ${errorMessage}`)
     }
   }
 

@@ -57,7 +57,8 @@ export function FormStep3({ formData, onSubmit, onAccelerate, onBackToHome }: Fo
     } catch (error) {
       console.error('Error submitting form:', error)
       // Aquí podrías mostrar un mensaje de error al usuario
-      alert(`Error al enviar el formulario: ${error.message}`)
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+      alert(`Error al enviar el formulario: ${errorMessage}`)
     } finally {
       setIsSubmitting(false)
     }

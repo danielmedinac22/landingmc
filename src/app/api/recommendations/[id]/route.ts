@@ -7,13 +7,7 @@ const updateRecommendationSchema = z.object({
   notes: z.string().optional(),
 })
 
-interface RouteParams {
-  params: Promise<{
-    id: string
-  }>
-}
-
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: recommendationId } = await params
     const body = await request.json()
@@ -91,7 +85,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: recommendationId } = await params
 

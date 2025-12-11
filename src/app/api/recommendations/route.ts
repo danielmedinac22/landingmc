@@ -54,26 +54,28 @@ export async function GET(request: NextRequest) {
     }
 
     // Formatear respuesta
-    const formattedRecommendations = recommendations.map(rec => ({
+    const formattedRecommendations = recommendations?.map((rec: any) => ({
       id: rec.id,
       match_score: rec.match_score,
       status: rec.status,
       notes: rec.notes,
       created_at: rec.created_at,
-      client: {
+      client: rec.clients ? {
         id: rec.clients.id,
         name: rec.clients.name,
         email: rec.clients.email,
         phone: rec.clients.phone,
         status: rec.clients.client_status,
-        services: rec.clients.client_services?.map((cs: any) => cs.services.name) || []
-      },
-      accountant: {
+        services: rec.clients.client_services?.map((cs: any) =>
+          cs.services?.name || (Array.isArray(cs.services) ? cs.services[0]?.name : null)
+        ).filter(Boolean) || []
+      } : null,
+      accountant: rec.accountants ? {
         id: rec.accountants.id,
         name: rec.accountants.name,
         specialty: rec.accountants.specialty
-      }
-    }))
+      } : null
+    })) || []
 
     return NextResponse.json({
       recommendations: formattedRecommendations,

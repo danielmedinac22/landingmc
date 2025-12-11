@@ -7,16 +7,9 @@ const updateClientSchema = z.object({
   notes: z.string().optional(),
 })
 
-interface RouteParams {
-  params: Promise<{
-    id: string
-  }>
-}
-
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
-  const { id } = await params
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const clientId = params.id
+    const { id: clientId } = await params
     const body = await request.json()
 
     // Validar datos de entrada
@@ -75,7 +68,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: clientId } = await params
 
@@ -145,8 +138,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({
       client: {
         ...client,
-        services: clientServices?.map(cs => cs.services) || [],
-        recommendations: recommendations || []
+        services: clientServices?.map(cs => {
+          const service = cs.services
+          return Array.isArray(service) ? service[0] : service
+        }).filter(Boolean) || [],
+        recommendations: recommendations?.map(rec => ({
+          ...rec,
+          accountants: Array.isArray(rec.accountants) ? rec.accountants[0] : rec.accountants
+        })) || []
       }
     })
 
