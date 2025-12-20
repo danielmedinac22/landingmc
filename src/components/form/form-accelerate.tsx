@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 
 interface FormAccelerateProps {
+  clientId: string | null
   onComplete: () => void
   onBackToHome: () => void
 }
@@ -44,12 +45,13 @@ const colombianCities = [
   "Riohacha",
 ]
 
-export function FormAccelerate({ onComplete, onBackToHome }: FormAccelerateProps) {
+export function FormAccelerate({ clientId, onComplete, onBackToHome }: FormAccelerateProps) {
   const [selectedSoftware, setSelectedSoftware] = React.useState<string[]>([])
   const [selectedCity, setSelectedCity] = React.useState<string>("")
   const [isSubmitted, setIsSubmitted] = React.useState(false)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [searchCity, setSearchCity] = React.useState("")
+  const [error, setError] = React.useState<string | null>(null)
 
   const filteredCities = React.useMemo(() => {
     if (!searchCity.trim()) return colombianCities
@@ -72,23 +74,38 @@ export function FormAccelerate({ onComplete, onBackToHome }: FormAccelerateProps
   }
 
   const handleSubmit = async () => {
+    if (!clientId) {
+      setError('No se pudo identificar tu solicitud. Por favor, intenta de nuevo.')
+      return
+    }
+
     setIsSubmitting(true)
+    setError(null)
 
     try {
-      // Aquí puedes enviar los datos adicionales
-      console.log("Additional form data:", {
-        software: selectedSoftware,
-        city: selectedCity,
+      const response = await fetch(`/api/clients/${clientId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          software: selectedSoftware,
+          city: selectedCity,
+        }),
       })
 
-      // Simular envío a API
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Error al enviar la información')
+      }
+
+      const result = await response.json()
+      console.log('Accelerate form submitted successfully:', result)
 
       setIsSubmitted(true)
-
-      // No cerrar automáticamente, el usuario debe hacer clic en "Volver al inicio"
-    } catch (error) {
-      console.error('Error submitting accelerated form:', error)
+    } catch (err) {
+      console.error('Error submitting accelerated form:', err)
+      setError(err instanceof Error ? err.message : 'Error desconocido')
     } finally {
       setIsSubmitting(false)
     }
@@ -240,6 +257,17 @@ export function FormAccelerate({ onComplete, onBackToHome }: FormAccelerateProps
                 )}
               </motion.div>
             </div>
+
+            {/* Mensaje de error */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-8 p-4 rounded-xl bg-destructive/10 text-destructive text-center"
+              >
+                {error}
+              </motion.div>
+            )}
 
             {/* Botón de envío */}
             <div className="flex justify-center mt-12">

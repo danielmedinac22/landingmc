@@ -5,6 +5,8 @@ import { z } from 'zod'
 const updateClientSchema = z.object({
   status: z.enum(['pending', 'contacted', 'qualified', 'converted']).optional(),
   notes: z.string().optional(),
+  city: z.string().max(100).optional(),
+  software: z.array(z.string()).optional(),
 })
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -31,6 +33,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       updateData.notes = validatedData.notes
     }
 
+    if (validatedData.city) {
+      updateData.city = validatedData.city
+    }
+
     const { data: updatedClient, error: updateError } = await supabase
       .from('clients')
       .update(updateData)
@@ -44,6 +50,47 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         { error: 'Error al actualizar el cliente' },
         { status: 500 }
       )
+    }
+
+    // Insertar relaciones de software si se proporcionan
+    if (validatedData.software && validatedData.software.length > 0) {
+      // Obtener IDs de los software por nombre
+      const { data: softwareData, error: softwareError } = await supabase
+        .from('software')
+        .select('id, name')
+        .in('name', validatedData.software)
+
+      if (softwareError) {
+        console.error('Error fetching software:', softwareError)
+        return NextResponse.json(
+          { error: 'Error al procesar el software seleccionado' },
+          { status: 500 }
+        )
+      }
+
+      if (softwareData && softwareData.length > 0) {
+        // Preparar datos para insertar
+        const clientSoftwareData = softwareData.map(sw => ({
+          client_id: clientId,
+          software_id: sw.id
+        }))
+
+        // Insertar relaciones (ignorar duplicados)
+        const { error: insertError } = await supabase
+          .from('client_software')
+          .upsert(clientSoftwareData, {
+            onConflict: 'client_id,software_id',
+            ignoreDuplicates: true
+          })
+
+        if (insertError) {
+          console.error('Error inserting client software:', insertError)
+          return NextResponse.json(
+            { error: 'Error al guardar el software del cliente' },
+            { status: 500 }
+          )
+        }
+      }
     }
 
     return NextResponse.json({

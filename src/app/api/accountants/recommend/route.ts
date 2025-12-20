@@ -18,7 +18,7 @@ interface Recommendation {
   match_score: number
   status: string
   accountant_id: string
-  accountants: Accountant[]
+  accountants: Accountant[] | Accountant
 }
 
 export async function GET(request: NextRequest) {
@@ -92,19 +92,26 @@ export async function GET(request: NextRequest) {
     }
 
     // Formatear respuesta
-    const formattedRecommendations = (recommendations as Recommendation[]).map(rec => {
-      const accountant = rec.accountants[0] // Join retorna array, pero en uno-a-uno solo hay un elemento
-      return {
-        id: accountant.id,
-        name: accountant.name,
-        specialty: accountant.specialty,
-        experience_years: accountant.experience_years,
-        rating: accountant.rating,
-        bio: accountant.bio,
-        match_score: rec.match_score,
-        is_fallback: false
-      }
-    })
+    const formattedRecommendations = (recommendations as Recommendation[])
+      .filter(rec => {
+        // Filtrar recomendaciones que tengan accountants válidos
+        const accountant = Array.isArray(rec.accountants) ? rec.accountants[0] : rec.accountants
+        return accountant && accountant.id
+      })
+      .map(rec => {
+        // Supabase puede retornar objeto o array dependiendo de la relación
+        const accountant = Array.isArray(rec.accountants) ? rec.accountants[0] : rec.accountants
+        return {
+          id: accountant.id,
+          name: accountant.name,
+          specialty: accountant.specialty,
+          experience_years: accountant.experience_years,
+          rating: accountant.rating,
+          bio: accountant.bio,
+          match_score: rec.match_score,
+          is_fallback: false
+        }
+      })
 
     return NextResponse.json({
       recommendations: formattedRecommendations

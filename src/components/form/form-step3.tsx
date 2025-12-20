@@ -17,9 +17,10 @@ interface FormStep3Props {
   onSubmit: () => void
   onAccelerate?: () => void
   onBackToHome?: () => void
+  onClientCreated?: (clientId: string) => void
 }
 
-export function FormStep3({ formData, onSubmit, onAccelerate, onBackToHome }: FormStep3Props) {
+export function FormStep3({ formData, onSubmit, onAccelerate, onBackToHome, onClientCreated }: FormStep3Props) {
   const [isSubmitted, setIsSubmitted] = React.useState(false)
   const [showRecommendations, setShowRecommendations] = React.useState(false)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
@@ -46,6 +47,11 @@ export function FormStep3({ formData, onSubmit, onAccelerate, onBackToHome }: Fo
 
       const result = await response.json()
       setClientId(result.clientId)
+
+      // Notificar al padre sobre el clientId
+      if (onClientCreated) {
+        onClientCreated(result.clientId)
+      }
 
       // Obtener recomendaciones
       await fetchRecommendations(result.clientId)

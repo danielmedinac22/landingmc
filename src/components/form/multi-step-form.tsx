@@ -28,6 +28,7 @@ interface MultiStepFormProps {
 export function MultiStepForm({ isOpen, onClose }: MultiStepFormProps) {
   const [currentStep, setCurrentStep] = React.useState(1)
   const [showAccelerateForm, setShowAccelerateForm] = React.useState(false)
+  const [clientId, setClientId] = React.useState<string | null>(null)
   const [formData, setFormData] = React.useState<FormData>({
     needs: [],
     name: "",
@@ -99,6 +100,10 @@ export function MultiStepForm({ isOpen, onClose }: MultiStepFormProps) {
     setShowAccelerateForm(true)
   }
 
+  const handleClientCreated = (id: string) => {
+    setClientId(id)
+  }
+
   const handleAccelerateComplete = () => {
     setShowAccelerateForm(false)
     handleBackToHome()
@@ -108,6 +113,7 @@ export function MultiStepForm({ isOpen, onClose }: MultiStepFormProps) {
     // Resetear el formulario
     setCurrentStep(1)
     setShowAccelerateForm(false)
+    setClientId(null)
     setFormData({
       needs: [],
       name: "",
@@ -292,6 +298,7 @@ export function MultiStepForm({ isOpen, onClose }: MultiStepFormProps) {
           {showAccelerateForm ? (
             <FormAccelerate
               key="accelerate"
+              clientId={clientId}
               onComplete={handleAccelerateComplete}
               onBackToHome={handleBackToHome}
             />
@@ -331,6 +338,7 @@ export function MultiStepForm({ isOpen, onClose }: MultiStepFormProps) {
                   onSubmit={handleFinalSubmit}
                   onAccelerate={handleAccelerate}
                   onBackToHome={handleBackToHome}
+                  onClientCreated={handleClientCreated}
                 />
               )}
             </>
